@@ -1,8 +1,10 @@
-/* MovieCard.css */
+body{
+  background-color: #000;
+}
 
 .movie_card {
-  background-color: #000;
-  color: #dad9d0;
+  background-color: black;
+  color: #ffffff;
   border: 2px solid #FFD700;
   border-radius: 10px;
   overflow: hidden;
@@ -38,6 +40,7 @@
 .movie_info p {
   margin: 0.3rem 0;
   font-size: 0.95rem;
+  
 }
 
 .movie_button {
