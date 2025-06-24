@@ -1,0 +1,73 @@
+/* MovieCard.css */
+
+.movie_card {
+  background-color: #000;
+  color: #dad9d0;
+  border: 2px solid #FFD700;
+  border-radius: 10px;
+  overflow: hidden;
+  width: 250px;
+  margin: 1rem;
+  box-shadow: 0 6px 16px rgba(255, 215, 0, 0.2);
+  transition: transform 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.movie_card:hover {
+  transform: scale(1.03);
+}
+
+.movie-poster {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+.movie_info {
+  padding: 1rem;
+  text-align: center;
+}
+
+.movie_info h3 {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.movie_info p {
+  margin: 0.3rem 0;
+  font-size: 0.95rem;
+}
+
+.movie_button {
+  display: flex;
+  justify-content: space-between;
+  padding: 2rem;
+  gap: 1rem;
+  
+}
+
+.movie_button button{
+  background-color: goldenrod;
+  color: #000;
+  border: none;
+  padding: 0.4rem 0.8rem;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: 170px;
+  height: 40px;
+ 
+}
+
+.movie_button button:hover {
+  background-color: rgb(177, 149, 77);
+}
+.favourited {
+  background-color: gold;
+  color: white;
+  cursor: not-allowed;
+}
+
