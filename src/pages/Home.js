@@ -15,8 +15,8 @@ const handleExplore = () => {
   <div className="bg bg3"></div>
 
   <div className="caption">
-    Find Movies That Match Your Mood! <br />
-    Whether you're feeling happy, sad, curious or nostalgic - there's movie waiting for you.
+    <p>Find Movies That Match Your Mood! 
+    Whether you're feeling happy, sad, curious or nostalgic - there's movie waiting for you.</p>
   </div>
   <div className="button">
     <button onClick={handleExplore}>Explore More</button>

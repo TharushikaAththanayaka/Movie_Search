@@ -17,10 +17,10 @@ export default function Movie() {
 
   const navigate = useNavigate();
 
-  const parseQuery = (query) => {
+    const parseQuery = (query) => {
     const yearMatch = query.match(/\b(19|20)\d{2}\b/); //search year as 4 digits
-    const year = yearMatch ? yearMatch[0] : '';
-    const title = query.replace(year, '').trim();
+    const year = yearMatch ? yearMatch[0] : ''; //if the year found display the year, if not empty string
+    const title = query.replace(year, '').trim(); 
     return { title: title || DEFAULT_SEARCH, year };
   };
 
@@ -45,16 +45,16 @@ export default function Movie() {
       }
 
       setMovies((prev) => [...prev, ...enriched]);
-      if (data.Search.length < 10) setHasMore(false);
+      if (data.Search.length < 10) setHasMore(false);//if the data <10, the current page is hit(no load more data)
     } else {
       if (pageNum === 1) setMovies([]);
       setHasMore(false);
     }
-    setIsLoading(false);
+    setIsLoading(false);//after all data fetched, close the loading
   };
 
   const handleSearch = () => {
-    const parsed = parseQuery(searchQuery.trim());
+  const parsed = parseQuery(searchQuery.trim());
     setParsedQuery(parsed);
     setMovies([]);
     setPage(1);
@@ -101,6 +101,8 @@ export default function Movie() {
           />
         ))}
       </div>
+
+      
 
       {hasMore && !isLoading && (
         <div className="load-more-container">
