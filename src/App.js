@@ -1,15 +1,15 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
-import NavBar from './components/NavBar';
-import Home from './pages/Home';
-import Movie from './pages/Movie';
-import MovieDetails from './components/MovieDetails';
+import NavBar from './components/NavBar/NavBar';
+import Home from './pages/Home/Home';
+import Movie from './pages/Movie/Movie';
+import MovieDetails from './components/MovieDetails/MovieDetails';
 import { useState } from 'react';
 function App() {
  
   return (
-    <Router>
+    <>
       <NavBar />
       <div className="App">
         <Routes>
@@ -18,7 +18,7 @@ function App() {
           <Route path="/movies/:id" element={<MovieDetails />} />
         </Routes>
       </div>
-    </Router>
+    </>
   );
 }
 
