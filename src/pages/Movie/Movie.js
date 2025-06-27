@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import MovieCard from '../components/MovieCard';
+import MovieCard from '../../components/MovieCard/MovieCard';
 import './Movie.css';
 import { useNavigate } from 'react-router-dom';
 import { FaSearch } from 'react-icons/fa';
@@ -72,6 +72,8 @@ export default function Movie() {
     navigate(`/movies/${movie.imdbID}`, { state: { movie } });
   };
 
+  const UMovies = Array.from(new Map(movies.map(m => [m.imdbID, m])).values());
+  
   return (
     <div className="content">
       <div className="search-bar">
@@ -87,18 +89,19 @@ export default function Movie() {
             }
           }}
         />
-        <button onClick={handleSearch}>
+        <button aria-label ="search" onClick={handleSearch}>
           <FaSearch />
         </button>
       </div>
 
       <div className="movie-grid">
-        {movies.map((movie) => (
+        
+        {UMovies.map((movie => (
           <MovieCard
             key={movie.imdbID}
             movie={movie}
             onSeeMore={() => handleSeeMore(movie)}
-          />
+          />)
         ))}
       </div>
 

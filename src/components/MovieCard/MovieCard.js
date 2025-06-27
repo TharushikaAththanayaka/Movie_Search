@@ -1,6 +1,6 @@
 import React from 'react'
 import { useState} from 'react'
-import '../components/MovieCard.css'
+import '../MovieCard/MovieCard.css'
 
 
 export default function MovieCard({movie,onSeeMore}) {   

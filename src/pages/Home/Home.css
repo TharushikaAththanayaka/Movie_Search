@@ -33,17 +33,17 @@
 
 
 .bg1 {
-  background-image: url('../img/back3.jpg');
+  background-image: url('../../img/back3.jpg');
   animation-delay: 0s;
 }
 
 .bg2 {
-  background-image: url('../img/back2.jpg');
+  background-image: url('../../img/back2.jpg');
   animation-delay: 3s;
 }
 
 .bg3 {
-  background-image: url('../img/back1.jpg');
+  background-image: url('../../img/back1.jpg');
   animation-delay: s;
 }
 

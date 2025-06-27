@@ -24,7 +24,7 @@ export default function MovieDetails() {
       className="watch"
       href={`https://www.imdb.com/title/${movie.imdbID}`}
       target="_blank"
-      rel="noopener noreferrer"
+      rel="noopener noreferrer" //keeping the site safe and protect data privacy(used for security)
     >
       Watch Movie
     </a>
