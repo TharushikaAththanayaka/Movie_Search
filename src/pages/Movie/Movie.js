@@ -1,79 +1,71 @@
-import React, { useEffect, useState } from 'react';
-import MovieCard from '../../components/MovieCard/MovieCard';
-import './Movie.css';
+import React, { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { FaSearch } from 'react-icons/fa';
+import MovieCard from '../../components/MovieCard/MovieCard';
+import './Movie.css';
 
 const API_KEY = 'a4367180';
 const DEFAULT_SEARCH = 'action';
 
-export default function Movie() {
-  const [movies, setMovies] = useState([]);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
-  const [parsedQuery, setParsedQuery] = useState({ title: DEFAULT_SEARCH, year: '' });
+//Parse user query string into title + optional year
+const parseQuery = (query) => {
+  const yearMatch = query.match(/\b(19|20)\d{2}\b/);
+  const year = yearMatch ? yearMatch[0] : '';
+  const title = query.replace(year, '').trim();
+  return { title: title || DEFAULT_SEARCH, year };
+};
 
+//Fetch movies and enrich with detailed info
+const fetchMovies = async ({ queryKey }) => {
+  const [_key, { title, page, year }] = queryKey;
+  const { data } = await axios.get(`https://www.omdbapi.com/?apikey=${API_KEY}&s=${title}&page=${page}`);
+  if (data.Response === 'False') throw new Error(data.Error);
+
+  const enriched = await Promise.all(
+    data.Search.map((movie) =>
+      axios
+        .get(`https://www.omdbapi.com/?apikey=${API_KEY}&i=${movie.imdbID}&plot=short`)
+        .then((res) => res.data)
+    )
+  );
+
+  return year ? enriched.filter((m) => m.Year === year) : enriched;
+};
+
+export default function Movie() {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [parsedQuery, setParsedQuery] = useState({ title: DEFAULT_SEARCH, year: '' });
+  const [page, setPage] = useState(1);
   const navigate = useNavigate();
 
-    const parseQuery = (query) => {
-    const yearMatch = query.match(/\b(19|20)\d{2}\b/); //search year as 4 digits
-    const year = yearMatch ? yearMatch[0] : ''; //if the year found display the year, if not empty string
-    const title = query.replace(year, '').trim(); 
-    return { title: title || DEFAULT_SEARCH, year };
-  };
-
-  const getMovieDetails = async (id) => {
-    const res = await fetch(`https://www.omdbapi.com/?apikey=${API_KEY}&i=${id}&plot=short`);
-    return await res.json();
-  };
-
-  const fetchAndEnrichMovies = async (title, pageNum = 1, filterYear = '') => {
-    setIsLoading(true);
-    const res = await fetch(`https://www.omdbapi.com/?apikey=${API_KEY}&s=${title}&page=${pageNum}`);
-    const data = await res.json();
-
-    if (data.Response === 'True') {
-      let enriched = await Promise.all(
-        data.Search.map((m) => getMovieDetails(m.imdbID))
-      );
-
-      // Optional client-side year filtering
-      if (filterYear) {
-        enriched = enriched.filter((movie) => movie.Year === filterYear);
-      }
-
-      setMovies((prev) => [...prev, ...enriched]);
-      if (data.Search.length < 10) setHasMore(false);//if the data <10, the current page is hit(no load more data)
-    } else {
-      if (pageNum === 1) setMovies([]);
-      setHasMore(false);
-    }
-    setIsLoading(false);//after all data fetched, close the loading
-  };
+  // useQuery with React Query v5 object syntax
+  const {
+    data: movies = [],
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
+    queryKey: ['movies', { title: parsedQuery.title, year: parsedQuery.year, page }],
+    queryFn: fetchMovies,
+    keepPreviousData: true,
+  });
 
   const handleSearch = () => {
-  const parsed = parseQuery(searchQuery.trim());
+    const parsed = parseQuery(searchQuery.trim());
     setParsedQuery(parsed);
-    setMovies([]);
     setPage(1);
-    setHasMore(true);
-    fetchAndEnrichMovies(parsed.title, 1, parsed.year);
+    refetch();
   };
-
-  useEffect(() => {
-    // Initial load or when parsedQuery changes
-    fetchAndEnrichMovies(parsedQuery.title, page, parsedQuery.year);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page]);
 
   const handleSeeMore = (movie) => {
     navigate(`/movies/${movie.imdbID}`, { state: { movie } });
   };
 
-  const UMovies = Array.from(new Map(movies.map(m => [m.imdbID, m])).values());
-  
+  //Remove duplicates by imdbID
+  const UMovies = Array.from(new Map(movies.map((m) => [m.imdbID, m])).values());
+
   return (
     <div className="content">
       <div className="search-bar">
@@ -82,40 +74,33 @@ export default function Movie() {
           placeholder="Search by title or year..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              setPage(1);
-              handleSearch();
-            }
-          }}
+          onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
         />
-        <button aria-label ="search" onClick={handleSearch}>
+        <button aria-label="search" onClick={handleSearch}>
           <FaSearch />
         </button>
       </div>
 
       <div className="movie-grid">
-        
-        {UMovies.map((movie => (
-          <MovieCard
-            key={movie.imdbID}
-            movie={movie}
-            onSeeMore={() => handleSeeMore(movie)}
-          />)
-        ))}
+        {isLoading ? (
+          <p style={{ textAlign: 'center' }}>Loading...</p>
+        ) : isError ? (
+          <p style={{ textAlign: 'center' }}>Failed to fetch movies.</p>
+        ) : (
+          UMovies.map((movie) => (
+            <MovieCard key={movie.imdbID} movie={movie} onSeeMore={() => handleSeeMore(movie)} />
+          ))
+        )}
       </div>
 
-      
-
-      {hasMore && !isLoading && (
+      {/*  Simple pagination by updating page number */}
+      {!isLoading && !isError && (
         <div className="load-more-container">
           <button className="load-more-button" onClick={() => setPage((prev) => prev + 1)}>
             Load More
           </button>
         </div>
       )}
-
-      {isLoading && <p style={{ textAlign: 'center' }}>Loading...</p>}
     </div>
   );
 }
