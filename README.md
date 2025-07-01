@@ -21,3 +21,4 @@ Movie Explorer is a dynamic React web application that allows users to discover 
 
 4. Run the code
    npm start
+Here I used react queries for my web application. I built a movie searcher app using a third-party API key to fetch real-time data about movies, including titles, posters, ratings, and descriptions. Integrating this API allowed me to deliver dynamic search results to users without having to manage my own database, and combined with React Query, it kept my app fast and responsive by efficiently handling caching and background data updates.
